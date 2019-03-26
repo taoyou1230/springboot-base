@@ -1,0 +1,116 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.1.RELEASE'
+    }
+    repositories {
+        maven { url "https://maven.aliyun.com/repository/spring" }
+        maven { url "https://maven.aliyun.com/repository/spring-plugin" }
+        maven { url "https://maven.aliyun.com/repository/central" }
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url "https://maven.aliyun.com/repository/spring" }
+        maven { url "https://maven.aliyun.com/repository/spring-plugin" }
+        maven { url "https://maven.aliyun.com/repository/central" }
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.springboot'
+//version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+archivesBaseName="base"
+
+ext {
+    profile = System.getProperty("env") ?: "dev"
+    println "[current profile]:" + profile
+}
+
+
+repositories {
+    maven { url "https://maven.aliyun.com/repository/spring" }
+    maven { url "https://maven.aliyun.com/repository/spring-plugin" }
+    maven { url "https://maven.aliyun.com/repository/central" }
+    mavenCentral()
+}
+
+dependencies {
+    implementation('org.apache.shiro:shiro-spring:1.4.0')
+    implementation('com.auth0:java-jwt:3.4.1')
+//    implementation('org.springframework.boot:spring-boot-starter-data-mongodb')
+    implementation('org.springframework.boot:spring-boot-devtools')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('com.alibaba:druid:1.1.13')
+    /*implementation('org.mybatis:mybatis:3.5.0')*/
+    implementation('org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0')
+    /*implementation('org.springframework:org.springframework.jdbc:3.2.2.RELEASE')*/
+    implementation('mysql:mysql-connector-java:8.0.15')
+    implementation('com.alibaba:fastjson:1.2.56')
+    implementation('org.springframework.boot:spring-boot-starter-logging:2.1.3.RELEASE')
+    implementation('log4j:log4j:1.2.17')
+    implementation('org.apache.directory.studio:org.apache.commons.lang:2.6')
+    implementation('com.gitee.sunchenbin.mybatis.actable:mybatis-enhance-actable:1.0.4')
+//	implementation('org.mybatis.generator:mybatis-generator-core:1.3.7')
+    implementation('tk.mybatis:mapper-spring-boot-starter:2.1.5')
+//	{
+//		exclude  group: 'javax.persistence'
+//	}
+    implementation('com.github.pagehelper:pagehelper-spring-boot-starter:1.2.10')
+    implementation('io.springfox:springfox-swagger-ui:2.9.2')
+    implementation('io.springfox:springfox-swagger2:2.9.2')
+    implementation('org.apache.httpcomponents:httpclient:4.5.7')
+    implementation('com.google.protobuf:protobuf-java:3.6.1')
+    implementation('com.aliyun.openservices:aliyun-log:0.6.30'){
+        exclude  group: 'com.google.protobuf:protobuf-java'
+    }
+    implementation('com.aliyun.openservices:log-loghub-log4j-appender:0.1.3')
+//	implementation('org.projectlombok:lombok:1.18.6')
+//	implementation('org.springframework.boot:spring-boot-starter-data-jpa:2.1.3.RELEASE')
+//	implementation('net.minidev:asm:1.0.2')
+//	implementation('junit:junit:4.12')
+    //spring-boot-admin客户端
+//    implementation('de.codecentric:spring-boot-admin-starter-client:2.1.3')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["src/main/resources", "env/$profile"]
+        }
+    }
+}
+
+jar {
+    String someString = ''
+    configurations.runtime.each {someString = someString + " lib//"+it.name}
+    manifest {
+        attributes 'Main-Class': 'cn.ubiot.SpingbootApplication'
+        attributes 'Class-Path': someString
+    }
+}
+//清除上次的编译过的文件
+task clearPj(type:Delete){
+    delete 'build','target'
+}
+task copyJar(type:Copy){
+    from configurations.runtime
+    into ('bulid/libs/lib')
+}
+//把JAR复制到目标目录
+
+task release(type: Copy,dependsOn: [build,copyJar]) {
+// from 'conf'
+// into ('release') // 目标位置
+}

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ubiot.ad.dao.MaterialMapper" >
+    <resultMap id="BaseResultMap" type="cn.ubiot.ad.entity.Material">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="descr" property="descr" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+        <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+        <result column="ad_position_id" property="adPositionId" jdbcType="INTEGER" />
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, name, descr,type, url,activity_id,ad_position_id,created_at, updated_at
+    </sql>
+
+    <sql id="Sort_Condition">
+        <trim suffixOverrides=",">
+            order by
+            <choose>
+                <when test="sortInfo != null and sortInfo.size>0">
+                    <if test="sortInfo.id =='desc'">
+                        id desc,
+                    </if>
+                    <if test="sortInfo.id =='asc'">
+                        id asc,
+                    </if>
+                    <if test="sortInfo.name == 'desc'">
+                        name desc,
+                    </if>
+                    <if test="sortInfo.name == 'asc'">
+                        name asc,
+                    </if>
+                    <if test="sortInfo.descr == 'desc'">
+                        descr desc,
+                    </if>
+                    <if test="sortInfo.descr == 'asc'">
+                        descr asc,
+                    </if>
+                    <if test="sortInfo.type == 'desc'">
+                        type desc,
+                    </if>
+                    <if test="sortInfo.type == 'asc'">
+                        type asc,
+                    </if>
+                    <if test="sortInfo.url == 'desc'">
+                        url desc,
+                    </if>
+                    <if test="sortInfo.url == 'asc'">
+                        url asc,
+                    </if>
+                    <if test="sortInfo.activityId == 'desc'">
+                        activity_id desc,
+                    </if>
+                    <if test="sortInfo.activityId == 'asc'">
+                        activity_id asc,
+                    </if>
+                    <if test="sortInfo.adPositionId == 'desc'">
+                        ad_position_id desc,
+                    </if>
+                    <if test="sortInfo.adPositionId == 'asc'">
+                        ad_position_id asc,
+                    </if>
+                    <if test="sortInfo.createdAt == 'desc'">
+                        created_at desc,
+                    </if>
+                    <if test="sortInfo.createdAt == 'asc'">
+                        created_at asc,
+                    </if>
+                    <if test="sortInfo.updatedAt == 'desc'">
+                        updated_at desc,
+                    </if>
+                    <if test="sortInfo.updatedAt == 'asc'">
+                        updated_at asc,
+                    </if>
+                </when>
+                <otherwise>
+                    created_at desc
+                </otherwise>
+            </choose>
+        </trim>
+    </sql>
+
+    <sql id="Query_Condition">
+        1=1
+        <if test="filters !=null and filters.size>0">
+            <if test="filters.id !=null and filters.id !=0">
+                and id = #{filters.id}
+            </if>
+            <if test="filters.name != null and filters.name != ''">
+                and name like concat('%',#{filters.name},'%')
+            </if>
+            <if test="filters.descr != null and filters.descr != ''">
+                and descr like concat('%',#{filters.descr},'%')
+            </if>
+
+            <if test="filters.type !=null and filters.type !=''">
+                and type = #{filters.type}
+            </if>
+            <if test="filters.url != null and filters.url != ''">
+                and url like concat('%',#{filters.url},'%')
+            </if>
+            <if test="filters.activityId != null and filters.activityId != 0">
+                and activity_id = {filters.activityId}
+            </if>
+            <if test="filters.adPositionId != null and filters.adPositionId != 0">
+                and ad_position_id = {filters.adPositionId}
+            </if>
+            <if test="filters.createdAt != null and filters.createdAt != ''">
+                and created_at &gt;= #{filters.createdAt}
+            </if>
+            <if test="filters.updatedAt != null and filters.updatedAt != ''">
+                and updated_at &lt;= #{filters.updatedAt}
+            </if>
+        </if>
+    </sql>
+
+    <select id="queryByCondition" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select <include refid="Base_Column_List"/> from material
+        <where>
+            <include refid="Query_Condition"/>
+        </where>
+        <include refid="Sort_Condition"/>
+    </select>
+</mapper>

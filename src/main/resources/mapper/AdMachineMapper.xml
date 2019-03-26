@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ubiot.ad.dao.AdMachineMapper" >
+    <resultMap id="BaseResultMap" type="cn.ubiot.ad.entity.AdMachine" >
+        <result column="imei" property="imei" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+        <result column="ad_machine_type" property="adMachineType" jdbcType="VARCHAR"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        imei, name, activity_id, ad_machine_type,created_at, updated_at
+    </sql>
+
+    <sql id="Sort_Condition">
+        <trim suffixOverrides=",">
+            order by
+            <choose>
+                <when test="sortInfo != null and sortInfo.size>0">
+                    <if test="sortInfo.imei =='desc'">
+                        imei desc,
+                    </if>
+                    <if test="sortInfo.imei =='asc'">
+                        imei asc,
+                    </if>
+                    <if test="sortInfo.name == 'desc'">
+                        name desc,
+                    </if>
+                    <if test="sortInfo.name == 'asc'">
+                        name asc,
+                    </if>
+                    <if test="sortInfo.activityId == 'desc'">
+                        activity_id desc,
+                    </if>
+                    <if test="sortInfo.activityId == 'asc'">
+                        activity_id asc,
+                    </if>
+                    <if test="sortInfo.adMachineType == 'desc'">
+                        ad_machine_type desc,
+                    </if>
+                    <if test="sortInfo.adMachineType == 'asc'">
+                        ad_machine_type asc,
+                    </if>
+                    <if test="sortInfo.createdAt == 'desc'">
+                        created_at desc,
+                    </if>
+                    <if test="sortInfo.createdAt == 'asc'">
+                        created_at asc,
+                    </if>
+                    <if test="sortInfo.updatedAt == 'desc'">
+                        updated_at desc,
+                    </if>
+                    <if test="sortInfo.updatedAt == 'asc'">
+                        updated_at asc,
+                    </if>
+                </when>
+                <otherwise>
+                    created_at desc
+                </otherwise>
+            </choose>
+        </trim>
+    </sql>
+
+    <sql id="Query_Condition">
+        1=1
+        <if test="filters !=null and filters.size >0">
+            <if test="filters.imei !=null and filters.imei !=''">
+                and imei = #{filters.imei}
+            </if>
+            <if test="filters.name != null and filters.name != ''">
+                and name like concat('%',#{filters.name},'%')
+            </if>
+            <if test="filters.activityId != null and filters.activityId != 0">
+                and activity_id = #{filters.activityId}
+            </if>
+            <if test="filters.adMachineType != null and filters.adMachineType !=''">
+                and ad_machine_type #{filters.adMachineType}
+            </if>
+            <if test="filters.createdAt != null and filters.createdAt != ''">
+                and created_at &gt;= #{filters.createdAt}
+            </if>
+            <if test="filters.updatedAt != null and filters.updatedAt != ''">
+                and updated_at &lt;= #{filters.updatedAt}
+            </if>
+        </if>
+    </sql>
+
+    <select id="queryByCondition" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select <include refid="Base_Column_List"/> from ad_machine
+        <where>
+            <include refid="Query_Condition"/>
+        </where>
+        <include refid="Sort_Condition"/>
+    </select>
+
+    <!--根据机器唯一码和活动id查询是否存在-->
+    <select id="isExistsByImeiAndActivityId" resultType="boolean" parameterType="cn.ubiot.ad.entity.AdMachine">
+        select EXISTS (SELECT 1 FROM ad_machine WHERE imei = #{imei} AND activity_id = #{activityId})
+    </select>
+    <!--根据机器唯一码和活动id信息数据-->
+    <update id="updateByImeiAndActivityId" parameterType="cn.ubiot.ad.entity.AdMachine">
+        update ad_machine
+        <set>
+           ad_machine_type = #{adMachineType}, updated_at = #{updatedAt},
+          <if test="name!=null and name != ''">
+              name = #{name},
+          </if>
+          <if test="createdAt != null">
+              created_at = #{createdAt}
+          </if>
+        </set>
+        where imei = #{imei} and activity_id = #{activityId};
+    </update>
+
+    <!--根据机器唯一码查询最新的活动-->
+    <select id="queryLatestByImei" resultMap="BaseResultMap" parameterType="String">
+        select *,MAX(created_at) from ad_machine
+        where imei = #{imei}
+    </select>
+
+    <!--根据机器唯一码更新非当前活动的关联表状态,不更新历史记录-->
+    <update id="updateAdMachineTypeByImeiAndActivityId">
+      update ad_machine
+      set ad_machine_type = #{adMachineType},updated_at = now()
+      where  ad_machine_type != 'HISTORY' and imei = #{imei} and activity_id != #{activityId}
+    </update>
+
+</mapper>
