@@ -1,7 +1,7 @@
 package com.springboot.base.common.autobean.utils;
 
 import java.io.*;
-
+import java.util.ArrayList;
 
 
 /**
@@ -134,5 +134,54 @@ public class FileUtil {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 读取目录文件夹下的所有文件
+     * @param path
+     * @return
+     */
+    public static ArrayList<File> getFiles(String path) {
+        ArrayList<File> files = new ArrayList<File>();
+        File file = new File(path);
+        File[] tempList = file.listFiles();
+        if(tempList==null){
+            return files;
+        }
+        for (int i = 0; i < tempList.length; i++) {
+            if (tempList[i].isFile()) {
+                files.add(tempList[i]);
+            }
+        }
+        return files;
+    }
+
+    /**
+     * 读取目录文件夹下的所有文件夹
+     * @param path
+     * @return
+     */
+    public static ArrayList<File> getFileDirectory(String path) {
+        ArrayList<File> fileDirectorys = new ArrayList<File>();
+        File file = new File(path);
+        File[] tempList = file.listFiles();
+        if(tempList==null){
+            return fileDirectorys;
+        }
+        for (int i = 0; i < tempList.length; i++) {
+            if (tempList[i].isDirectory()) {
+                fileDirectorys.add(tempList[i]);
+            }
+        }
+        return fileDirectorys;
+    }
+
+    public static void main(String[]args){
+        ArrayList<File> list = getFileDirectory("E:/other/base/src/main/java/com/springboot/base/module");
+        System.out.println(list);
+        for(File file:list){
+            ArrayList<File> list2 = getFiles(file.getPath());
+            System.out.println(list2);
+        }
     }
 }

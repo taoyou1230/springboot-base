@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.*;
 import org.apache.log4j.Logger;
 import com.springboot.base.common.UserPermissionHelp;
 import com.springboot.base.common.user.entity.User;
-import com.springboot.base.module.service.MallFeedbackService;
+import com.springboot.base.module.service.ActivityService;
 @Controller
-@RequestMapping("mallFeedbackService")
-public class MallFeedbackController extends BaseController{
+@RequestMapping("activityService")
+public class ActivityController extends BaseController{
 
-	private static Logger log = Logger.getLogger(MallFeedbackController.class);
+	private static Logger log = Logger.getLogger(ActivityController.class);
 	@Resource
-	private MallFeedbackService mallFeedbackService;
+	private ActivityService activityService;
 	@Resource
 	private UserPermissionHelp userPermissionHelp;
 	@Resource

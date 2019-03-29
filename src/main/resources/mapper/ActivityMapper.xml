@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.springboot.base.module.dao.MallMpUserMapper">
-	<resultMap id="BaseResultMap" type="com.springboot.base.module.entity.MallMpUser">
+<mapper namespace="com.springboot.base.module.dao.ActivityMapper">
+	<resultMap id="BaseResultMap" type="com.springboot.base.module.entity.Activity">
 		<id column="id" property="id" jdbcType="INTEGER"/>
-		<result column="openid" property="openid" jdbcType="VARCHAR"/>
-		<result column="session_key" property="sessionKey" jdbcType="VARCHAR"/>
 		<result column="name" property="name" jdbcType="VARCHAR"/>
-		<result column="address" property="address" jdbcType="VARCHAR"/>
-		<result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+		<result column="descr" property="descr" jdbcType="VARCHAR"/>
+		<result column="company_name" property="companyName" jdbcType="VARCHAR"/>
 		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
 		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
 	</resultMap>
 
 	<sql id="Base_Column_List">
-		id,openid,session_key,name,address,avatar,created_at,updated_at
+		id,name,descr,company_name,created_at,updated_at
 	</sql>
 
 	<sql id="Sort_Condition">
@@ -27,35 +25,23 @@
 				<if test="sortInfo.id =='asc'">
 					id asc,
 				</if>
-				<if test="sortInfo.openid =='desc'">
-					openid desc,
-				</if>
-				<if test="sortInfo.openid =='asc'">
-					openid asc,
-				</if>
-				<if test="sortInfo.sessionKey =='desc'">
-					session_key desc,
-				</if>
-				<if test="sortInfo.sessionKey =='asc'">
-					session_key asc,
-				</if>
 				<if test="sortInfo.name =='desc'">
 					name desc,
 				</if>
 				<if test="sortInfo.name =='asc'">
 					name asc,
 				</if>
-				<if test="sortInfo.address =='desc'">
-					address desc,
+				<if test="sortInfo.descr =='desc'">
+					descr desc,
 				</if>
-				<if test="sortInfo.address =='asc'">
-					address asc,
+				<if test="sortInfo.descr =='asc'">
+					descr asc,
 				</if>
-				<if test="sortInfo.avatar =='desc'">
-					avatar desc,
+				<if test="sortInfo.companyName =='desc'">
+					company_name desc,
 				</if>
-				<if test="sortInfo.avatar =='asc'">
-					avatar asc,
+				<if test="sortInfo.companyName =='asc'">
+					company_name asc,
 				</if>
 				<if test="sortInfo.createdAt =='desc'">
 					created_at desc,
@@ -83,20 +69,14 @@
 			<if test="filters.id !=null and filters.id !=0">
 				and id = #{filters.id}
 			</if>
-			<if test="filters.openid !=null and filters.openid !=''">
-				and openid = #{filters.openid}
-			</if>
-			<if test="filters.sessionKey !=null and filters.sessionKey !=''">
-				and session_key = #{filters.sessionKey}
-			</if>
 			<if test="filters.name !=null and filters.name !=''">
 				and name = #{filters.name}
 			</if>
-			<if test="filters.address !=null and filters.address !=''">
-				and address = #{filters.address}
+			<if test="filters.descr !=null and filters.descr !=''">
+				and descr = #{filters.descr}
 			</if>
-			<if test="filters.avatar !=null and filters.avatar !=''">
-				and avatar = #{filters.avatar}
+			<if test="filters.companyName !=null and filters.companyName !=''">
+				and company_name = #{filters.companyName}
 			</if>
 			<if test="filters.createdAt !=null">
 				and created_at = #{filters.createdAt}
@@ -108,6 +88,7 @@
 	</sql>
 
 	<select id="queryByCondition" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List"/> from activity
 		<where>
 			<include refid="Query_Condition"/>
 		</where>
